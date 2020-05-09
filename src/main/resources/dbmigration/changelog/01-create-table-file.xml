@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="lomovskoy_ky">
+
+        <createTable tableName="file">
+            <column name="id" type="UUID" remarks="Идентификатор файла">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="file_id_PK" unique="true"/>
+            </column>
+            <column name="fileName" type="varchar(255)" remarks="Имя файла">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fileExt" type="varchar(10)" remarks="Расширение файла">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filePath" type="varchar(10)" remarks="Путь к файлу">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createDate" type="timestamp" remarks="Дата создания файла">
+                <constraints nullable="false"/>
+            </column>
+            <column name="editDate" type="timestamp" remarks="Дата последнего изменения файла">
+                <constraints nullable="false"/>
+            </column>
+            <column name="size" type="bigint" remarks="Размер файла">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>
