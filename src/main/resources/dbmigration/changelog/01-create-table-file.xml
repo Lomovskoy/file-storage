@@ -25,6 +25,9 @@
             <column name="editDate" type="timestamp" remarks="Дата последнего изменения файла">
                 <constraints nullable="false"/>
             </column>
+            <column name="userId" type="UUID" remarks="Идентификатор пользователя загрузившего файл">
+                <constraints nullable="false"/>
+            </column>
             <column name="size" type="bigint" remarks="Размер файла">
                 <constraints nullable="false"/>
             </column>

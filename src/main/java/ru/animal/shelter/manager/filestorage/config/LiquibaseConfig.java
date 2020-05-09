@@ -22,18 +22,18 @@ public class LiquibaseConfig {
         this.dataSource = dataSource;
         this.liquibaseChangeLogPath = liquibaseChangeLogPath;
         this.defaultSchema = defaultSchema;
+        logPreInit();
     }
 
     @Bean
     public SpringLiquibase liquibase(){
-        logPreInit();
+        logInit();
         var liquibase = new SpringLiquibase();
         liquibase.setChangeLog(liquibaseChangeLogPath);
         liquibase.setDataSource(dataSource);
         liquibase.setDefaultSchema(defaultSchema);
         liquibase.setDropFirst(Boolean.FALSE);
         liquibase.setLiquibaseSchema(defaultSchema);
-        logInit();
         return liquibase;
     }
 
