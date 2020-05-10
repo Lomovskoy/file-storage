@@ -9,9 +9,9 @@ public interface FileService {
 
     FileMetaInf getFile(UUID fileId);
 
-    FileMetaInf saveFile(MultipartFile file, UUID userId, String description);
+    FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description);
 
-    FileMetaInf editFile(FileMetaInf file);
+    FileMetaInf editFile(FileMetaInf multipartFile);
 
     void deleteFile(UUID fileId);
 }
