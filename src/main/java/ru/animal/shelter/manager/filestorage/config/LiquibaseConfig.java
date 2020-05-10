@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 @Configuration
 public class LiquibaseConfig {
 
-    private final Logger LOG = LoggerFactory.getLogger(LiquibaseConfig.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LiquibaseConfig.class);
     private final DataSource dataSource;
     private final String liquibaseChangeLogPath;
     private final String defaultSchema;
@@ -22,28 +22,23 @@ public class LiquibaseConfig {
         this.dataSource = dataSource;
         this.liquibaseChangeLogPath = liquibaseChangeLogPath;
         this.defaultSchema = defaultSchema;
-        logPreInit();
     }
 
     @Bean
     public SpringLiquibase liquibase(){
-        logInit();
         var liquibase = new SpringLiquibase();
         liquibase.setChangeLog(liquibaseChangeLogPath);
         liquibase.setDataSource(dataSource);
         liquibase.setDefaultSchema(defaultSchema);
         liquibase.setDropFirst(Boolean.FALSE);
         liquibase.setLiquibaseSchema(defaultSchema);
+        logPreInit(liquibase);
         return liquibase;
     }
 
-    private void logPreInit() {
-        LOG.info("LiquibaseConfig dataSource: [" + dataSource + "]");
-        LOG.info("LiquibaseConfig liquibaseChangeLogPath: [" + liquibaseChangeLogPath + "]");
-        LOG.info("LiquibaseConfig defaultSchema: [" + defaultSchema + "]");
+    private void logPreInit(SpringLiquibase liquibase) {
+        LOG.info(String.format("LiquibaseConfig initialized: [ dataSource = %s, changeLogPath = %s, defaultSchema = %s ]",
+                liquibase.getDataSource(), liquibase.getChangeLog(), liquibase.getDefaultSchema()));
     }
 
-    private void logInit() {
-        LOG.info("LiquibaseConfig initialized");
-    }
 }

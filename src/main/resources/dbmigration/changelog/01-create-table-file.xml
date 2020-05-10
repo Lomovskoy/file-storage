@@ -28,6 +28,9 @@
             <column name="userId" type="UUID" remarks="Идентификатор пользователя загрузившего файл">
                 <constraints nullable="false"/>
             </column>
+            <column name="description" type="varchar(500)" remarks="Описание файла">
+                <constraints nullable="true"/>
+            </column>
             <column name="size" type="bigint" remarks="Размер файла">
                 <constraints nullable="false"/>
             </column>
