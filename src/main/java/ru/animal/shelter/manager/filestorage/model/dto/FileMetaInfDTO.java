@@ -2,40 +2,42 @@ package ru.animal.shelter.manager.filestorage.model.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
 @AllArgsConstructor
 @ApiModel("Модель метаинформации о файле")
-public class FileDTO {
+public class FileMetaInfDTO {
 
     @ApiModelProperty("Идентификатор файла")
-    UUID id;
+    private final UUID id;
 
+    @NonNull
     @ApiModelProperty("Имя файла")
-    String fileName;
+    private final String fileName;
 
+    @NonNull
     @ApiModelProperty("Расширение файла")
-    String fileExt;
+    private final String fileExt;
 
-    @ApiModelProperty("Путь к файлу")
-    String filePath;
-
+    @NonNull
     @ApiModelProperty("Дата создания файла")
-    LocalDateTime createDate;
+    private final LocalDateTime createDate;
 
+    @NonNull
     @ApiModelProperty("Дата последнего изменения файла")
-    LocalDateTime editDate;
+    private final LocalDateTime editDate;
 
+    @NonNull
     @ApiModelProperty("Идентификатор пользователя загрузившего файл")
-    UUID userId;
+    private final UUID userId;
 
+    @NonNull
     @ApiModelProperty("Описание файла")
-    String description;
+    private final String description;
 
     @ApiModelProperty("Размер файла")
-    long size;
+    private final long size;
 }

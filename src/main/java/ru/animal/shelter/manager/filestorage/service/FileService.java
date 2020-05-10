@@ -1,15 +1,17 @@
 package ru.animal.shelter.manager.filestorage.service;
 
-import ru.animal.shelter.manager.filestorage.model.File;
+import org.springframework.web.multipart.MultipartFile;
+import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
+
 import java.util.UUID;
 
 public interface FileService {
 
-    File getFile(UUID fileId);
+    FileMetaInf getFile(UUID fileId);
 
-    File saveFile(File file);
+    FileMetaInf saveFile(MultipartFile file, UUID userId, String description);
 
-    File editFile(File file);
+    FileMetaInf editFile(FileMetaInf file);
 
     void deleteFile(UUID fileId);
 }

@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.animal.shelter.manager.filestorage.model.dto.FileDTO;
+import org.springframework.web.multipart.MultipartFile;
+import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
 import ru.animal.shelter.manager.filestorage.service.FileService;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
 
@@ -24,26 +24,27 @@ public class FileController {
 
     @GetMapping("{fileId}")
     @ApiOperation("Полйчить файл")
-    public FileDTO getFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId) {
+    public FileMetaInfDTO getFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId) {
         var file = fileService.getFile(fileId);
         return fileMapper.fileToFileDtoMapper(file);
     }
 
-    @PostMapping
     @ApiOperation("Загрузить файл")
-    public FileDTO saveFile(@ApiParam("Обьект описания файла") @RequestBody @Validated FileDTO fileDTO) {
-        var file = fileMapper.fileDtoToFileMapper(fileDTO);
-        file = fileService.saveFile(file);
-        return fileMapper.fileToFileDtoMapper(file);
+    @PostMapping(value = "{userId}")
+    @ResponseBody
+    public FileMetaInfDTO saveFile(@RequestBody MultipartFile multipartFile, @PathVariable UUID userId,
+                                                   @RequestParam(defaultValue = "") String description) {
+        var fileMetaInf = fileService.saveFile(multipartFile, userId, description);
+        return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 
-    @PutMapping
-    @ApiOperation("Изменить файл")
-    public FileDTO editFile(@ApiParam("Обьект описания файла") @RequestBody @Validated FileDTO fileDTO) {
-        var file = fileMapper.fileDtoToFileMapper(fileDTO);
-        file = fileService.editFile(file);
-        return fileMapper.fileToFileDtoMapper(file);
-    }
+//    @PutMapping
+//    @ApiOperation("Изменить файл")
+//    public FileMetaInfDTO editFile(@ApiParam("Обьект описания файла") @RequestBody @Validated FileMetaInfDTO fileDTO) {
+//        var file = fileMapper.fileDtoToFileMapper(fileDTO);
+//        file = fileService.editFile(file);
+//        return fileMapper.fileToFileDtoMapper(file);
+//    }
 
     @DeleteMapping("{fileId}")
     @ApiOperation("Удалить файл")

@@ -56,7 +56,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--Swagger 2 -->
+        <!-- Swagger 2 -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>

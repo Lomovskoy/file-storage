@@ -6,30 +6,30 @@
 
     <changeSet id="1" author="lomovskoy_ky">
 
-        <createTable tableName="file">
+        <createTable tableName="file_meta_inf" remarks="Таблица с мета информацией о файле">
             <column name="id" type="UUID" remarks="Идентификатор файла">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="file_id_PK" unique="true"/>
             </column>
-            <column name="fileName" type="varchar(255)" remarks="Имя файла">
+            <column name="file_name" type="varchar(255)" remarks="Имя файла">
                 <constraints nullable="false"/>
             </column>
-            <column name="fileExt" type="varchar(10)" remarks="Расширение файла">
+            <column name="file_ext" type="varchar(10)" remarks="Расширение файла">
                 <constraints nullable="false"/>
             </column>
-            <column name="filePath" type="varchar(10)" remarks="Путь к файлу">
+            <column name="file_path" type="varchar(10)" remarks="Путь к файлу">
                 <constraints nullable="false"/>
             </column>
-            <column name="createDate" type="timestamp" remarks="Дата создания файла">
+            <column name="create_date" type="timestamp" remarks="Дата создания файла">
                 <constraints nullable="false"/>
             </column>
-            <column name="editDate" type="timestamp" remarks="Дата последнего изменения файла">
+            <column name="edit_date" type="timestamp" remarks="Дата последнего изменения файла">
                 <constraints nullable="false"/>
             </column>
-            <column name="userId" type="UUID" remarks="Идентификатор пользователя загрузившего файл">
+            <column name="user_id" type="UUID" remarks="Идентификатор пользователя загрузившего файл">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(500)" remarks="Описание файла">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="size" type="bigint" remarks="Размер файла">
                 <constraints nullable="false"/>

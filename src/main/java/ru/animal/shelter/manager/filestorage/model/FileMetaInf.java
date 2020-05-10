@@ -20,35 +20,35 @@ import java.util.UUID;
 @Validated
 @NoArgsConstructor
 @AllArgsConstructor
-public class File {
+public class FileMetaInf {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    UUID id;
+    private UUID id;
 
     @NonNull
     @Size(max = 255, min = 1, message = "Имя файла должно быть от 1 до 255 символов")
-    String fileName;
+    private String fileName;
 
     @NonNull
     @Size(max = 10, min = 1, message = "Расширение файла должно быть от 1 до 10 символов")
-    String fileExt;
+    private String fileExt;
 
     @NonNull
     @Size(max = 10, min = 10, message = "Путь файла должно быть 10 символов")
-    String filePath;
+    private String filePath;
 
     @NonNull
-    LocalDateTime createDate;
+    private LocalDateTime createDate;
 
     @NonNull
-    LocalDateTime editDate;
+    private LocalDateTime editDate;
 
     @NonNull
-    UUID userId;
+    private UUID userId;
 
     @Size(max = 500, message = "Описание файла не должно превышать 500 символов")
-    String description;
-    
-    long size;
+    private String description;
+
+    private long size;
 }

@@ -1,13 +1,17 @@
 package ru.animal.shelter.manager.filestorage.service.mappers;
 
 import org.springframework.stereotype.Service;
-import ru.animal.shelter.manager.filestorage.model.File;
-import ru.animal.shelter.manager.filestorage.model.dto.FileDTO;
+import org.springframework.web.multipart.MultipartFile;
+import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
+import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
+import java.util.UUID;
 
 @Service
 public interface FileMapper {
 
-    File fileDtoToFileMapper(FileDTO fileDTO);
+//    FileMetaInf fileDtoToFileMapper(FileMetaInfDTO fileDTO);
 
-    FileDTO fileToFileDtoMapper(File file);
+    FileMetaInfDTO fileToFileDtoMapper(FileMetaInf file);
+
+    FileMetaInf requestSaveFileToFileMetaInfMapper(MultipartFile file, UUID userId, String description);
 }
