@@ -13,15 +13,23 @@ public class FileStorageProperties {
     private static final Logger LOG = LoggerFactory.getLogger(FileStorageProperties.class);
     private final String path;
     private final long maxUploadSizeFile;
+    private final int maxNumberUploadSizeFile;
+    private final int maxNumberDownloadedSizeFile;
 
     public FileStorageProperties(@Value("${file-storage.path}") String path,
-                                 @Value("${file-storage.max-upload-size-file}") long maxUploadSizeFile) {
+                                 @Value("${file-storage.max-upload-size-file}") long maxUploadSizeFile,
+                                 @Value("${file-storage.max-number-upload-files}") int maxNumberUploadSizeFile,
+                                 @Value("${file-storage.max-number-downloaded-files}") int maxNumberDownloadedSizeFile) {
         this.path = path;
         this.maxUploadSizeFile = maxUploadSizeFile;
-        log(path, maxUploadSizeFile);
+        this.maxNumberUploadSizeFile = maxNumberUploadSizeFile;
+        this.maxNumberDownloadedSizeFile = maxNumberDownloadedSizeFile;
+        log();
     }
 
-    private void log(String path, long maxUploadSizeFile) {
-        LOG.info(String.format("File Storage config: path = %s maxUploadSizeFile = %s ", path, maxUploadSizeFile));
+    private void log() {
+        LOG.info(String.format("File Storage config: path = %s maxUploadSizeFile = %s maxNumberUploadSizeFile= %s " +
+                        "maxNumberDownloadedSizeFile = %s",
+                path, maxUploadSizeFile, maxNumberUploadSizeFile, maxNumberDownloadedSizeFile));
     }
 }

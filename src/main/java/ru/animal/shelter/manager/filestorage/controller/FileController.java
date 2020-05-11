@@ -5,16 +5,20 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.aop.FileSizeValidation;
 import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
+import ru.animal.shelter.manager.filestorage.model.dto.RequestForMultipleFileDTO;
 import ru.animal.shelter.manager.filestorage.service.FileService;
 import ru.animal.shelter.manager.filestorage.service.impl.FileMetaInfServiceImpl;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -35,11 +39,18 @@ public class FileController {
     }
 
     @GetMapping("metaInf/{userId}/{fileId}")
-    @ApiOperation("Полйчить метаинформацию о файле")
+    @ApiOperation("Получить метаинформацию о файле")
     public FileMetaInfDTO getMetaInfFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId,
                                          @ApiParam("Идентификатор пользователя") @PathVariable UUID userId){
         var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
         return fileMapper.fileToFileDtoMapper(fileMetaInf);
+    }
+
+    @GetMapping("many/metaInf")
+    @ApiOperation("Получить метаинформацию о файлах")
+    public List<FileMetaInfDTO> getManyMetaInfFile(@Validated RequestForMultipleFileDTO request){
+        var fileMetaInf = fileMetaInfService.getManyMetaInfFile(request);
+        return fileMetaInf.stream().map(fileMapper::fileToFileDtoMapper).collect(Collectors.toList());
     }
 
     @FileSizeValidation
