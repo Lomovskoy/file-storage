@@ -7,11 +7,11 @@ import java.util.UUID;
 
 public interface FileMetaInfService {
 
-    FileMetaInf getMetaInfFile(UUID fileId);
+    FileMetaInf getMetaInfFile(UUID userId, UUID fileId);
 
     FileMetaInf saveMetaInfFile(MultipartFile multipartFile, UUID userId, String description);
 
-    FileMetaInf editMetaInfFile(FileMetaInf multipartFile);
+    FileMetaInf editMetaInfFile(UUID userId, UUID fileId, String description);
 
     void deleteMetaInfFile(UUID fileId);
 }

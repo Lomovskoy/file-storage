@@ -27,12 +27,12 @@ public class FileServiceImpl implements FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
 
-    FileMetaInfService fileMetaInfService;
-    FileStorageProperties fileStorageProperties;
+    private final FileMetaInfService fileMetaInfService;
+    private final FileStorageProperties fileStorageProperties;
 
     @Override
-    public void getFile(UUID fileId, HttpServletResponse response) throws IOException {
-        var fileMetaInf = fileMetaInfService.getMetaInfFile(fileId);
+    public void getFile(UUID userId, UUID fileId, HttpServletResponse response) throws IOException {
+        var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
         var file = new File(getPath(fileMetaInf) + File.separator + fileMetaInf.getId().toString());
         setResponse(response, fileMetaInf);
         checkFile(file);
@@ -61,8 +61,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void deleteFile(UUID fileId) throws IOException {
-        var fileMetaInf = fileMetaInfService.getMetaInfFile(fileId);
+    public void deleteFile(UUID userId, UUID fileId) throws IOException {
+        var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
         var file = new File(getPath(fileMetaInf) + File.separator + fileMetaInf.getId().toString());
         checkFile(file);
 

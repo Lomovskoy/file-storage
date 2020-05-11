@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FileMapperImpl implements FileMapper {
 
-    Clock clock;
+    private final Clock clock;
 
     @Override
     public FileMetaInfDTO fileToFileDtoMapper(FileMetaInf file) {

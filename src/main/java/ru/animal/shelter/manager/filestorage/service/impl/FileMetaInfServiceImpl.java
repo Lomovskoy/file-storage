@@ -9,6 +9,9 @@ import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
 import ru.animal.shelter.manager.filestorage.repository.FileRepository;
 import ru.animal.shelter.manager.filestorage.service.FileMetaInfService;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
+import javax.validation.ValidationException;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -17,25 +20,37 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileMetaInfServiceImpl.class);
 
-    FileMapperImpl fileMapper;
-    FileRepository fileRepository;
+    private final Clock clock;
+    private final FileMapperImpl fileMapper;
+    private final FileRepository fileRepository;
 
     @Override
-    public FileMetaInf getMetaInfFile(UUID fileId) {
-        return fileRepository.findById(fileId).orElseThrow();
+    public FileMetaInf getMetaInfFile(UUID userId, UUID fileId) {
+        var fileMetaInf = fileRepository.findById(fileId).orElseThrow();
+        validationOfRights(userId, fileId, fileMetaInf);
+        return fileMetaInf;
     }
 
     @Override
     public FileMetaInf saveMetaInfFile(MultipartFile multipartFile, UUID userId, String description) {
-        var fileMetaInf = getFileMetaInf(multipartFile, userId, description);
+        var fileMetaInf = buildFileMetaInf(multipartFile, userId, description);
         var fileMetaInfDB = fileRepository.save(fileMetaInf);
         LOG.info("Meta-information about the file was successfully saved to the database");
         return fileMetaInfDB;
     }
 
     @Override
-    public FileMetaInf editMetaInfFile(FileMetaInf multipartFile) {
-        return null;
+    public FileMetaInf editMetaInfFile(UUID userId, UUID fileId, String description) {
+        var fileMetaInf = getMetaInfFile(userId, fileId);
+        validationOfRights(userId, fileId, fileMetaInf);
+
+        if (!description.isEmpty() || !description.equals("")){
+            fileMetaInf.setDescription(description);
+            fileMetaInf.setEditDate(LocalDateTime.now(clock.getZone()));
+            fileRepository.save(fileMetaInf);
+            log(userId, fileId);
+        }
+        return fileMetaInf;
     }
 
     @Override
@@ -43,7 +58,17 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
         fileRepository.deleteById(fileId);
     }
 
-    private FileMetaInf getFileMetaInf(MultipartFile multipartFile, UUID userId, String description) {
+    private FileMetaInf buildFileMetaInf(MultipartFile multipartFile, UUID userId, String description) {
         return fileMapper.requestSaveFileToFileMetaInfMapper(multipartFile, userId, description);
+    }
+
+    private void log(UUID userId, UUID fileId) {
+        LOG.info(String.format("Meta-information about the file %s, was changed by the user %s, " +
+                "and saved to the database successfully", fileId, userId));
+    }
+
+    private void validationOfRights(UUID userId, UUID fileId, FileMetaInf fileMetaInf) {
+        if (!fileMetaInf.getId().equals(fileId) || !fileMetaInf.getUserId().equals(userId))
+            throw new ValidationException(String.format("У пользователя %s нет прав на файл %s ", userId, fileId));
     }
 }

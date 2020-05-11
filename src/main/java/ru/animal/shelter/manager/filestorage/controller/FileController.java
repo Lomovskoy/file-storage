@@ -4,27 +4,16 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.aop.FileSizeValidation;
-import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
 import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
 import ru.animal.shelter.manager.filestorage.service.FileService;
 import ru.animal.shelter.manager.filestorage.service.impl.FileMetaInfServiceImpl;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
-import ru.animal.shelter.manager.filestorage.utils.MediaTypeUtils;
-
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
 
 @RestController
@@ -37,37 +26,45 @@ public class FileController {
     private final FileMapperImpl fileMapper;
     private final FileMetaInfServiceImpl fileMetaInfService;
 
-    @GetMapping(path = "{fileId}")
+    @GetMapping("/{userId}/{fileId}")
     @ApiOperation("Полйчить файл")
     public void getFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId,
-                                                     HttpServletResponse response) throws IOException {
-        fileService.getFile(fileId, response);
+                        @ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
+                        HttpServletResponse response) throws IOException {
+        fileService.getFile(userId, fileId, response);
     }
 
-    @GetMapping(path = "metaInf/{fileId}")
+    @GetMapping("metaInf/{userId}/{fileId}")
     @ApiOperation("Полйчить метаинформацию о файле")
-    public FileMetaInf getMetaInfFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId){
-        return fileMetaInfService.getMetaInfFile(fileId);
+    public FileMetaInfDTO getMetaInfFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId,
+                                         @ApiParam("Идентификатор пользователя") @PathVariable UUID userId){
+        var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
+        return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 
     @FileSizeValidation
     @ApiOperation("Загрузить файл")
-    @PostMapping(value = "{userId}")
-    public FileMetaInfDTO saveFile(@RequestBody MultipartFile multipartFile, @PathVariable UUID userId,
-                                   @RequestParam(defaultValue = "") String description) throws IOException {
+    @PostMapping("{userId}")
+    public FileMetaInfDTO saveFile(@ApiParam("Файл") @RequestBody MultipartFile multipartFile,
+                                   @ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
+                                   @ApiParam("Описани файла") @RequestParam(defaultValue = "") String description) throws IOException {
         var fileMetaInf = fileService.saveFile(multipartFile, userId, description);
         return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 
-    @PutMapping
-    @ApiOperation("Изменить файл")
-    public FileMetaInfDTO editFile(@ApiParam("Обьект описания файла") @RequestBody @Validated FileMetaInfDTO fileDTO) {
-        return null;
+    @PutMapping("{userId}/{fileId}")
+    @ApiOperation("Изменить метаинформацию о файле")
+    public FileMetaInfDTO editFile(@ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
+                                   @ApiParam("Идентификатор файла") @PathVariable UUID fileId,
+                                   @ApiParam("Описани файла") @RequestParam(defaultValue = "") String description) {
+        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description);
+        return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 
-    @DeleteMapping("{fileId}")
+    @DeleteMapping("{userId}/{fileId}")
     @ApiOperation("Удалить файл")
-    public void deleteFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId) throws IOException {
-        fileService.deleteFile(fileId);
+    public void deleteFile(@ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
+                           @ApiParam("Идентификатор файла") @PathVariable UUID fileId) throws IOException {
+        fileService.deleteFile(userId, fileId);
     }
 }

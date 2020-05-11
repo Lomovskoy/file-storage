@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface FileService {
 
-    void getFile(UUID fileId, HttpServletResponse response) throws IOException;
+    void getFile(UUID userId, UUID fileId, HttpServletResponse response) throws IOException;
 
     FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description) throws IOException;
 
-    void deleteFile(UUID fileId) throws IOException;
+    void deleteFile(UUID userId, UUID fileId) throws IOException;
 }
