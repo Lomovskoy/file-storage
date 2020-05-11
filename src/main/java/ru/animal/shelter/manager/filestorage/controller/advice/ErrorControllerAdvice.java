@@ -30,14 +30,14 @@ public class ErrorControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletResponse response) {
-        log.warn("Validation error.", e);
+        log.warn("Validation error:", e);
         return new ResponseEntity<>(getDescription(e), HttpStatus.BAD_REQUEST);
     }
-    
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e, HttpServletResponse response) {
-        log.warn("Validation error.", e);
+        log.warn("Validation error: ", e);
         return new ResponseEntity<>(getDescription(e), HttpStatus.BAD_REQUEST);
     }
 
@@ -51,7 +51,7 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleBindException(BindException e) {
-        log.warn("Validation error.", e);
+        log.warn("Validation error: ", e);
         return new ResponseEntity<>(getDefaultMessage(e), HttpStatus.BAD_REQUEST);
 
     }
@@ -72,15 +72,15 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleThrowable(Throwable e, HttpServletResponse response) {
-        log.error("Internal server error", e);
-        return new ResponseEntity<>("Внутренняя ошибка сервера", HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("Internal server error: ", e);
+        return new ResponseEntity<>("Внутренняя ошибка сервера: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleRequestProcessingException(Throwable e, HttpServletResponse response) {
-        log.error("Request processing error", e);
-        return new ResponseEntity<>("Ошибка обработки запрос", HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("Request processing error: ", e);
+        return new ResponseEntity<>("Ошибка обработки запроса: " + e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -107,7 +107,7 @@ public class ErrorControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex, HttpServletResponse response) {
-        log.warn("Max file size exceeded.", ex);
+        log.warn("Max file size exceeded: ", ex);
         long fileSizeInMb = ex.getMaxUploadSize() / 1024 / 1024;
         String message = String.format("Максимальный размер файла %d MB.%n " +
                 "Обратитесь к администратору или загрузите файл частями.", fileSizeInMb);

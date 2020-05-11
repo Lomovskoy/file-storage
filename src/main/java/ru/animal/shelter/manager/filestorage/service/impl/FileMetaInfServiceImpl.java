@@ -40,7 +40,7 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
 
     @Override
     public void deleteMetaInfFile(UUID fileId) {
-
+        fileRepository.deleteById(fileId);
     }
 
     private FileMetaInf getFileMetaInf(MultipartFile multipartFile, UUID userId, String description) {

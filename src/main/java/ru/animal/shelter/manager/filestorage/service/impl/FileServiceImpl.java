@@ -8,10 +8,9 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.config.FileStorageProperties;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
-import ru.animal.shelter.manager.filestorage.repository.FileRepository;
 import ru.animal.shelter.manager.filestorage.service.FileMetaInfService;
 import ru.animal.shelter.manager.filestorage.service.FileService;
-import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description) {
+    public FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description) throws IOException {
         var fileBD = fileMetaInfService.saveMetaInfFile(multipartFile, userId, description);
         var path = getPath(fileBD);
         checkDirs(path);
@@ -41,7 +40,8 @@ public class FileServiceImpl implements FileService {
             FileCopyUtils.copy(multipartFile.getBytes(), fileOutputStream);
             LOG.info("File successfully written to disk");
         } catch (IOException ex){
-            LOG.info("Error writing file to disk: " + ex);
+            fileMetaInfService.deleteMetaInfFile(fileBD.getId());
+            throw new IOException("Error writing file to disk: " + ex);
         }
         return fileBD;
     }
