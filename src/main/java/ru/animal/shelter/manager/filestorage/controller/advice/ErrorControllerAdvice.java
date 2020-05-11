@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
+import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -112,6 +114,13 @@ public class ErrorControllerAdvice {
         String message = String.format("Максимальный размер файла %d MB.%n " +
                 "Обратитесь к администратору или загрузите файл частями.", fileSizeInMb);
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(SizeLimitExceededException.class)
+    public ResponseEntity<Object> handleMaxUploadSizeExceededException(SizeLimitExceededException ex, HttpServletResponse response) {
+        log.warn("Max file size exceeded: ", ex);
+        return new ResponseEntity<>(ex.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
 
     private String getDescription(MethodArgumentNotValidException e) {

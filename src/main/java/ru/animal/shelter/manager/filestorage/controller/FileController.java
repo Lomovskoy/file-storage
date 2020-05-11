@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.animal.shelter.manager.filestorage.aop.FileSizeValidation;
 import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
 import ru.animal.shelter.manager.filestorage.service.FileService;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
@@ -30,9 +31,9 @@ public class FileController {
         return null;
     }
 
+    @FileSizeValidation
     @ApiOperation("Загрузить файл")
     @PostMapping(value = "{userId}")
-    @ResponseBody
     public FileMetaInfDTO saveFile(@RequestBody MultipartFile multipartFile, @PathVariable UUID userId,
                                    @RequestParam(defaultValue = "") String description) throws IOException {
         var fileMetaInf = fileService.saveFile(multipartFile, userId, description);
