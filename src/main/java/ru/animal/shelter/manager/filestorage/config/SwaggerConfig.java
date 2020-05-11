@@ -37,7 +37,7 @@ public class SwaggerConfig {
                         "Lomovskoy Kirill",
                         "http://javacv.h1n.ru/",
                         "lomovskoy.kirill@yandex.ru"),
-                "GNU",
+                "Free",
                 "http://javacv.h1n.ru/",
                 new ArrayList<>());
     }

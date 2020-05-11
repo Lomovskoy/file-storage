@@ -11,7 +11,5 @@ public interface FileService {
 
     FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description);
 
-    FileMetaInf editFile(FileMetaInf multipartFile);
-
     void deleteFile(UUID fileId);
 }

@@ -50,5 +50,5 @@ public class FileMetaInf {
     @Size(max = 500, message = "Описание файла не должно превышать 500 символов")
     private String description;
 
-    private long size;
+    long size;
 }

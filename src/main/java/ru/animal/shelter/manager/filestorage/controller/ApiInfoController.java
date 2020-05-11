@@ -12,11 +12,7 @@ import springfox.documentation.annotations.ApiIgnore;
 class ApiInfoController {
 
     @GetMapping
-    public String getInfo(){
-        try {
-            return "redirect:/swagger-ui.html";
-        } catch (Exception ex) {
-            return ex.getMessage();
-        }
+    public String getInfo() {
+        return "redirect:/swagger-ui.html";
     }
 }

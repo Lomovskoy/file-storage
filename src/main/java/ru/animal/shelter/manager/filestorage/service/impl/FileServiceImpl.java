@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.config.FileStorageProperties;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
 import ru.animal.shelter.manager.filestorage.repository.FileRepository;
+import ru.animal.shelter.manager.filestorage.service.FileMetaInfService;
 import ru.animal.shelter.manager.filestorage.service.FileService;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
 import java.io.File;
@@ -22,38 +23,47 @@ public class FileServiceImpl implements FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
 
-    FileMapperImpl fileMapper;
-    FileRepository fileRepository;
+    FileMetaInfService fileMetaInfService;
     FileStorageProperties fileStorageProperties;
 
     @Override
     public FileMetaInf getFile(UUID fileId) {
-        return fileRepository.findById(fileId).orElse(new FileMetaInf());
+        return null;
     }
 
     @Override
     public FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description) {
-        var fileMetaInf = fileMapper.requestSaveFileToFileMetaInfMapper(multipartFile, userId, description);
-        var fileBD = fileRepository.save(fileMetaInf);
-        var path = fileStorageProperties.getPath() + File.separator + fileBD.getFilePath();
-        var file = new File(path);
-        if (!file.exists()) file.mkdirs();
+        var fileBD = fileMetaInfService.saveMetaInfFile(multipartFile, userId, description);
+        var path = getPath(fileBD);
+        checkDirs(path);
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(path + File.separator + fileBD.getId()))){
+        try (var fileOutputStream = new FileOutputStream(getFile(fileBD, path))){
             FileCopyUtils.copy(multipartFile.getBytes(), fileOutputStream);
+            LOG.info("File successfully written to disk");
         } catch (IOException ex){
-            LOG.error(ex.getMessage());
+            LOG.info("Error writing file to disk: " + ex);
         }
         return fileBD;
     }
 
     @Override
-    public FileMetaInf editFile(FileMetaInf file) {
-        return fileRepository.save(file);
+    public void deleteFile(UUID fileId) {
+
     }
 
-    @Override
-    public void deleteFile(UUID fileId) {
-        fileRepository.deleteById(fileId);
+    private String getPath(FileMetaInf fileBD) {
+        return fileStorageProperties.getPath() + File.separator + fileBD.getFilePath();
+    }
+
+    private void checkDirs(String path) {
+        var file = new File(path);
+
+        if (!file.exists())
+            if (file.mkdirs())
+                LOG.info("Create new catalog: " + file.getPath());
+    }
+
+    private File getFile(FileMetaInf fileBD, String path) {
+        return new File(path + File.separator + fileBD.getId());
     }
 }
