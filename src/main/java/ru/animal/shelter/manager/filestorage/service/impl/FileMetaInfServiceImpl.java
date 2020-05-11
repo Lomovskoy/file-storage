@@ -22,7 +22,7 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
 
     @Override
     public FileMetaInf getMetaInfFile(UUID fileId) {
-        return null;
+        return fileRepository.findById(fileId).orElseThrow();
     }
 
     @Override
