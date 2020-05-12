@@ -49,23 +49,19 @@ public class FileServiceImpl implements FileService {
         var fileMetaInfList = fileMetaInfService.getManyMetaInfFile(request);
         checkFileList(request, fileMetaInfList);
         var pathZipFile = getPath(fileMetaInfList.get(0));
-        try(var zipOS = new ZipOutputStream(new FileOutputStream(pathZipFile + fileMetaInfList.get(0).getId() + ZIP))) {
-            fileMetaInfList.forEach(fileMetaInf-> {
-                var filename = getFile(fileMetaInf, getPath(fileMetaInf));
-                try(var fileIn = new FileInputStream(filename)) {
-                    var entry = new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt());
-                    zipOS.putNextEntry(entry);
-                    byte[] buffer = new byte[fileIn.available()];
-                    fileIn.read(buffer);
-                    zipOS.write(buffer);
-                } catch(IOException ex) {
-                    LOG.error("Error uploading files by user: " + ex);
-                    //throw new IOException("Error uploading file by user: " + ex);
-                }
-            });
-            zipOS.closeEntry();
-        } catch(IOException ex) {
-            throw new IOException("Error uploading files by user: " + ex);
+
+        for (var fileMetaInf: fileMetaInfList) {
+            var filename = getFile(fileMetaInf, getPath(fileMetaInf));
+            try(var zipOS = new ZipOutputStream(new FileOutputStream(getNameZipFile(fileMetaInfList, pathZipFile)));
+                var fileIn = new FileInputStream(filename)) {
+                var entry = new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt());
+                zipOS.putNextEntry(entry);
+                byte[] buffer = new byte[fileIn.available()];
+                fileIn.read(buffer);
+                zipOS.write(buffer);
+            } catch(IOException ex) {
+                throw new IOException("Error uploading files by user: " + ex);
+            }
         }
     }
 
@@ -140,5 +136,9 @@ public class FileServiceImpl implements FileService {
     private void checkFileList(RequestForMultipleFileDTO request, List<FileMetaInf> fileMetaInfList) {
         if (fileMetaInfList.isEmpty())
             throw new ValidationException("The list of files turned out to be empty for the user: " + request.getUserId());
+    }
+
+    private String getNameZipFile(List<FileMetaInf> fileMetaInfList, String pathZipFile) {
+        return pathZipFile + fileMetaInfList.get(0).getId() + ZIP;
     }
 }
