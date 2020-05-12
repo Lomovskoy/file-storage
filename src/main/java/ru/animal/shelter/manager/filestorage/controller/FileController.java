@@ -38,6 +38,12 @@ public class FileController {
         fileService.getFile(userId, fileId, response);
     }
 
+    @GetMapping("many")
+    @ApiOperation("Полйчить файлы")
+    public void getManyFile(@Validated RequestForMultipleFileDTO request, HttpServletResponse response) throws IOException {
+        fileService.getManyFile(request, response);
+    }
+
     @GetMapping("metaInf/{userId}/{fileId}")
     @ApiOperation("Получить метаинформацию о файле")
     public FileMetaInfDTO getMetaInfFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId,

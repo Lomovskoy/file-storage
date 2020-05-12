@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
+
 @Getter
 @Configuration
 public class FileStorageProperties {
@@ -20,11 +22,15 @@ public class FileStorageProperties {
                                  @Value("${file-storage.max-upload-size-file}") long maxUploadSizeFile,
                                  @Value("${file-storage.max-number-upload-files}") int maxNumberUploadSizeFile,
                                  @Value("${file-storage.max-number-downloaded-files}") int maxNumberDownloadedSizeFile) {
-        this.path = path;
+        this.path = getPath(path);
         this.maxUploadSizeFile = maxUploadSizeFile;
         this.maxNumberUploadSizeFile = maxNumberUploadSizeFile;
         this.maxNumberDownloadedSizeFile = maxNumberDownloadedSizeFile;
         log();
+    }
+
+    private String getPath(String path){
+        return path.replace("/", File.separator).replace("\\", File.separator);
     }
 
     private void log() {
