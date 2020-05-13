@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
     private static final String ZIP = "zip";
+    private static final String UTF_8 = "UTF-8";
     private static final String NAME = "archive_files_for_";
 
     private final Clock clock;
@@ -92,11 +95,12 @@ public class ArchiveServiceImpl implements ArchiveService {
     }
 
     private void setResponse(HttpServletResponse response, FileMetaInf fileMetaInf) {
+        var fileName = URLEncoder.encode(fileMetaInf.getFileName(), StandardCharsets.UTF_8);
         response.setHeader(
                 HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +
-                        fileMetaInf.getFileName() + "." +
-                        fileMetaInf.getFileExt());
+                        fileName + "." + fileMetaInf.getFileExt());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setContentLengthLong(fileMetaInf.getSize());
+        response.setCharacterEncoding(UTF_8);
     }
 }

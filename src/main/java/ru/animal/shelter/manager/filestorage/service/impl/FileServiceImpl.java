@@ -16,6 +16,8 @@ import ru.animal.shelter.manager.filestorage.utils.FileUtils;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
+    private static final String UTF_8 = "UTF-8";
 
     private final FileUtils fileUtils;
     private final ArchiveServiceImpl archiveService;
@@ -82,12 +85,13 @@ public class FileServiceImpl implements FileService {
     }
 
     private void setResponse(HttpServletResponse response, FileMetaInf fileMetaInf) {
+        var fileName = URLEncoder.encode(fileMetaInf.getFileName(), StandardCharsets.UTF_8);
         response.setHeader(
                 HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +
-                        fileMetaInf.getFileName() + "." +
-                        fileMetaInf.getFileExt());
+                        fileName + "." + fileMetaInf.getFileExt());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setContentLengthLong(fileMetaInf.getSize());
+        response.setCharacterEncoding(UTF_8);
     }
 
     private void checkFileList(RequestForMultipleFileDTO request, List<FileMetaInf> fileMetaInfList) {
