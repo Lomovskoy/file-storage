@@ -12,10 +12,7 @@ import ru.animal.shelter.manager.filestorage.service.ArchiveService;
 import ru.animal.shelter.manager.filestorage.utils.FileUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
@@ -34,8 +31,9 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
     private static final String ZIP = "zip";
-    private static final String UTF_8 = "UTF-8";
+    private static final int BYTE = 1024;
     private static final String NAME = "archive_files_for_";
+    private static final int COMPRESSION = 5;
 
     private final Clock clock;
     private final FileUtils fileUtils;
@@ -45,13 +43,16 @@ public class ArchiveServiceImpl implements ArchiveService {
         var pathZipFile = fileUtils.getPath(fileMetaInfList.get(0));
         var nameZipFile = getNameZipFile(pathZipFile);
 
-        try(var zipOS = new ZipOutputStream(new FileOutputStream(nameZipFile))) {
+        try(var zipOS = new ZipOutputStream(new FileOutputStream(nameZipFile), StandardCharsets.UTF_8)) {
+            zipOS.setLevel(COMPRESSION);
             for (var fileMetaInf: fileMetaInfList) {
                 var filename = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf));
-                try(var fileIn = new FileInputStream(filename)) {
-                    zipOS.putNextEntry(new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt()));
-                    zipOS.write(fileIn.read(new byte[fileIn.available()]));
-                }
+                    var ze = new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt());
+                    zipOS.putNextEntry(ze);
+                    try (var fileIn = new FileInputStream(filename)) {
+                        write(fileIn, zipOS);
+                    }
+                    zipOS.closeEntry();
             }
         } catch(IOException ex) {
             throw new IOException("Error created archive: " + ex);
@@ -101,6 +102,13 @@ public class ArchiveServiceImpl implements ArchiveService {
                         fileName + "." + fileMetaInf.getFileExt());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setContentLengthLong(fileMetaInf.getSize());
-        response.setCharacterEncoding(UTF_8);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
+    }
+
+    void write(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[BYTE];
+        while (in.read(buffer) != -1) {
+            out.write(buffer);
+        }
     }
 }

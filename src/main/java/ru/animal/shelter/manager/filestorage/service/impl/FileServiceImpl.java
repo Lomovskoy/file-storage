@@ -51,7 +51,7 @@ public class FileServiceImpl implements FileService {
         checkFileList(request, fileMetaInfList);
         var archivePath = archiveService.saveFilesToArchive(fileMetaInfList);
         archiveService.getArchive(response, archivePath);
-        archiveService.deleteArchive(archivePath);
+//        archiveService.deleteArchive(archivePath);
     }
 
     @Override
