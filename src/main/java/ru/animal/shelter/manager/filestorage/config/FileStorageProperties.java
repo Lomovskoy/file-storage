@@ -17,15 +17,21 @@ public class FileStorageProperties {
     private final long maxUploadSizeFile;
     private final int maxNumberUploadSizeFile;
     private final int maxNumberDownloadedSizeFile;
+    private final int compression;
+    private final int numberOfUploadedFiles;
 
     public FileStorageProperties(@Value("${file-storage.path}") String path,
                                  @Value("${file-storage.max-upload-size-file}") long maxUploadSizeFile,
                                  @Value("${file-storage.max-number-upload-files}") int maxNumberUploadSizeFile,
-                                 @Value("${file-storage.max-number-downloaded-files}") int maxNumberDownloadedSizeFile) {
+                                 @Value("${file-storage.max-number-downloaded-files}") int maxNumberDownloadedSizeFile,
+                                 @Value("${file-storage.compression-files}") int compression,
+                                 @Value("${file-storage.number-of-uploaded-files}") int numberOfUploadedFiles) {
         this.path = getPath(path);
         this.maxUploadSizeFile = maxUploadSizeFile;
         this.maxNumberUploadSizeFile = maxNumberUploadSizeFile;
         this.maxNumberDownloadedSizeFile = maxNumberDownloadedSizeFile;
+        this.compression = compression;
+        this.numberOfUploadedFiles = numberOfUploadedFiles;
         log();
     }
 
@@ -35,7 +41,8 @@ public class FileStorageProperties {
 
     private void log() {
         LOG.info(String.format("File Storage config: path = %s maxUploadSizeFile = %s maxNumberUploadSizeFile= %s " +
-                        "maxNumberDownloadedSizeFile = %s",
-                path, maxUploadSizeFile, maxNumberUploadSizeFile, maxNumberDownloadedSizeFile));
+                        "maxNumberDownloadedSizeFile = %s compression = %s numberOfUploadedFiles = %s",
+                path, maxUploadSizeFile, maxNumberUploadSizeFile, maxNumberDownloadedSizeFile,
+                compression, numberOfUploadedFiles));
     }
 }

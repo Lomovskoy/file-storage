@@ -46,9 +46,9 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void getManyFile(RequestForMultipleFileDTO request, HttpServletResponse response) throws IOException  {
-        var fileMetaInfList = fileMetaInfService.getManyMetaInfFile(request);
-        checkFileList(request, fileMetaInfList);
+    public void getManyFile(RequestForMultipleFileDTO requestForMultipleFile, HttpServletResponse response) throws IOException  {
+        var fileMetaInfList = fileMetaInfService.getManyMetaInfFile(requestForMultipleFile);
+        checkFileList(requestForMultipleFile, fileMetaInfList);
         var archivePath = archiveService.saveFilesToArchive(fileMetaInfList);
         archiveService.getArchive(response, archivePath);
         archiveService.deleteArchive(archivePath);

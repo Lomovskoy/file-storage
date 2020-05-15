@@ -22,7 +22,7 @@ public class FileSizeValidationImpl extends Validation {
     public void fullVerificationOfRole(JoinPoint point) {
         String[] names = getNames(point);
         checkName(names, MULTIPART_FILE);
-        var file = getValue(point, names, MULTIPART_FILE);
+        var file = getValueMultipart(point, names, MULTIPART_FILE);
         if (file.getSize() > fileStorageProperties.getMaxUploadSizeFile()){
             throw new MaxUploadSizeExceededException(fileStorageProperties.getMaxUploadSizeFile());
         }

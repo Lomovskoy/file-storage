@@ -7,10 +7,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
+import ru.animal.shelter.manager.filestorage.config.FileStorageProperties;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
 import ru.animal.shelter.manager.filestorage.service.ArchiveService;
 import ru.animal.shelter.manager.filestorage.utils.FileUtils;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
@@ -18,9 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,12 +31,11 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
     private static final String ZIP = "zip";
-    private static final int BYTE = 1024;
     private static final String NAME = "archive_files_for_";
-    private static final int COMPRESSION = 5;
 
     private final Clock clock;
     private final FileUtils fileUtils;
+    private final FileStorageProperties fileStorageProperties;
 
     @Override
     public String saveFilesToArchive(List<FileMetaInf> fileMetaInfList) throws IOException {
@@ -47,6 +43,7 @@ public class ArchiveServiceImpl implements ArchiveService {
         var nameZipFile = getNameZipFile(pathZipFile);
 
         try(var zipFile = new FileOutputStream(nameZipFile); var zipOS = new ZipOutputStream(zipFile)) {
+            zipOS.setLevel(fileStorageProperties.getCompression());
             for (var fileMetaInf: fileMetaInfList) {
                 zipOS.putNextEntry(new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt()));
                 var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.TRUE);

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.animal.shelter.manager.filestorage.aop.FileNumberValidation;
 import ru.animal.shelter.manager.filestorage.aop.FileSizeValidation;
 import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
 import ru.animal.shelter.manager.filestorage.model.dto.RequestForMultipleFileDTO;
@@ -38,10 +39,11 @@ public class FileController {
         fileService.getFile(userId, fileId, response);
     }
 
+    @FileNumberValidation
     @GetMapping("many")
     @ApiOperation("Полйчить файлы")
-    public void getManyFile(@Validated RequestForMultipleFileDTO request, HttpServletResponse response) throws IOException {
-        fileService.getManyFile(request, response);
+    public void getManyFile(@Validated RequestForMultipleFileDTO requestForMultipleFile, HttpServletResponse response) throws IOException {
+        fileService.getManyFile(requestForMultipleFile, response);
     }
 
     @GetMapping("metaInf/{userId}/{fileId}")

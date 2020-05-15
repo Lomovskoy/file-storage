@@ -12,7 +12,7 @@ public interface FileService {
 
     void getFile(UUID userId, UUID fileId, HttpServletResponse response) throws IOException;
 
-    void getManyFile(RequestForMultipleFileDTO request, HttpServletResponse response) throws IOException;
+    void getManyFile(RequestForMultipleFileDTO requestForMultipleFile, HttpServletResponse response) throws IOException;
 
     FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description) throws IOException;
 
