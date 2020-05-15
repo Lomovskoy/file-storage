@@ -15,9 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,32 +46,27 @@ public class ArchiveServiceImpl implements ArchiveService {
         var pathZipFile = fileUtils.getPath(fileMetaInfList.get(0));
         var nameZipFile = getNameZipFile(pathZipFile);
 
-        try(var zipOS = new ZipOutputStream(new FileOutputStream(nameZipFile), StandardCharsets.UTF_8)) {
-            zipOS.setLevel(COMPRESSION);
+        try(var zipFile = new FileOutputStream(nameZipFile); var zipOS = new ZipOutputStream(zipFile)) {
             for (var fileMetaInf: fileMetaInfList) {
-                var filename = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf));
-                    var ze = new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt());
-                    zipOS.putNextEntry(ze);
-                    try (var fileIn = new FileInputStream(filename)) {
-                        write(fileIn, zipOS);
-                    }
-                    zipOS.closeEntry();
+                zipOS.putNextEntry(new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt()));
+                var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.TRUE);
+                Files.copy(file.toPath(), zipOS);
             }
-        } catch(IOException ex) {
+        }catch(IOException ex) {
             throw new IOException("Error created archive: " + ex);
         }
-        var fileIds = fileMetaInfList.stream().map(f-> f.getId().toString()).collect(Collectors.toList());
-        LOG.info(String.format("File archive created: %s",  fileIds));
+
+        log(fileMetaInfList);
         return nameZipFile;
     }
 
     @Override
     public void getArchive(HttpServletResponse response, String path) throws IOException {
         setResponse(response, getNameArchive());
-        try (var zipInputStream = new ZipInputStream(new FileInputStream(path))){
+        try (var zipInputStream = new ZipInputStream(new FileInputStream(path))) {
             FileCopyUtils.copy(zipInputStream, response.getOutputStream());
             LOG.info("Archive uploaded successfully by user");
-        } catch (IOException ex){
+        } catch (IOException ex) {
             throw new IOException("Error uploading archive by user: " + ex);
         }
     }
@@ -105,10 +103,8 @@ public class ArchiveServiceImpl implements ArchiveService {
         response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
     }
 
-    void write(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[BYTE];
-        while (in.read(buffer) != -1) {
-            out.write(buffer);
-        }
+    private void log(List<FileMetaInf> fileMetaInfList) {
+        var fileIds = fileMetaInfList.stream().map(f -> f.getId().toString()).collect(Collectors.toList());
+        LOG.info(String.format("File archive created: %s", fileIds));
     }
 }

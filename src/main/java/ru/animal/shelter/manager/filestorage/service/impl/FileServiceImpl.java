@@ -35,7 +35,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void getFile(UUID userId, UUID fileId, HttpServletResponse response) throws IOException {
         var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
-        var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf));
+        var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.TRUE);
         setResponse(response, fileMetaInf);
         try (var fileInputStream = new FileInputStream(file)){
             FileCopyUtils.copy(fileInputStream, response.getOutputStream());
@@ -51,13 +51,13 @@ public class FileServiceImpl implements FileService {
         checkFileList(request, fileMetaInfList);
         var archivePath = archiveService.saveFilesToArchive(fileMetaInfList);
         archiveService.getArchive(response, archivePath);
-//        archiveService.deleteArchive(archivePath);
+        archiveService.deleteArchive(archivePath);
     }
 
     @Override
     public FileMetaInf saveFile(MultipartFile multipartFile, UUID userId, String description) throws IOException {
         var fileMetaInf = fileMetaInfService.saveMetaInfFile(multipartFile, userId, description);
-        var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf));
+        var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.FALSE);
 
         try (var fileOutputStream = new FileOutputStream(file)){
             FileCopyUtils.copy(multipartFile.getBytes(), fileOutputStream);
@@ -72,7 +72,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void deleteFile(UUID userId, UUID fileId) throws IOException {
         var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
-        var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf));
+        var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.TRUE);
 
         if (file.delete()) {
             LOG.info("File: '" + file.getAbsolutePath() + "' deleted");

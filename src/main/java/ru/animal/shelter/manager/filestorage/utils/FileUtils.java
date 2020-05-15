@@ -16,9 +16,9 @@ public class FileUtils {
     private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
     private final FileStorageProperties fileStorageProperties;
 
-    public File getFile(FileMetaInf fileBD, String path) {
+    public File getFile(FileMetaInf fileBD, String path, boolean check) {
         var file = new File(path + fileBD.getId());
-        checkFile(file);
+        if (check) checkFile(file);
         return file;
     }
 
