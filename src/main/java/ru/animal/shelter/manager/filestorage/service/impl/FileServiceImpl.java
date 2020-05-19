@@ -26,7 +26,6 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
-    private static final String UTF_8 = "UTF-8";
 
     private final FileUtils fileUtils;
     private final ArchiveServiceImpl archiveService;
@@ -91,7 +90,7 @@ public class FileServiceImpl implements FileService {
                         fileName + "." + fileMetaInf.getFileExt());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setContentLengthLong(fileMetaInf.getSize());
-        response.setCharacterEncoding(UTF_8);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
     }
 
     private void checkFileList(RequestForMultipleFileDTO request, List<FileMetaInf> fileMetaInfList) {
