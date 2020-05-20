@@ -18,8 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -42,14 +41,14 @@ public class ArchiveServiceImpl implements ArchiveService {
         var pathZipFile = fileUtils.getPath(fileMetaInfList.get(0));
         var nameZipFile = getNameZipFile(pathZipFile);
 
-        try(var zipFile = new FileOutputStream(nameZipFile); var zipOS = new ZipOutputStream(zipFile)) {
+        try (var zipFile = new FileOutputStream(nameZipFile); var zipOS = new ZipOutputStream(zipFile)) {
             zipOS.setLevel(fileStorageProperties.getCompression());
-            for (var fileMetaInf: fileMetaInfList) {
+            for (var fileMetaInf : fileMetaInfList) {
                 zipOS.putNextEntry(new ZipEntry(fileMetaInf.getFileName() + "." + fileMetaInf.getFileExt()));
                 var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.TRUE);
                 Files.copy(file.toPath(), zipOS);
             }
-        }catch(IOException ex) {
+        } catch (IOException ex) {
             throw new IOException("Error created archive: " + ex);
         }
 
