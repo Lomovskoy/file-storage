@@ -72,15 +72,17 @@ public class FileServiceImpl implements FileService {
     public void deleteFile(UUID userId, UUID fileId) throws IOException {
         var fileMetaInf = fileMetaInfService.getMetaInfFile(userId, fileId);
         var file = fileUtils.getFile(fileMetaInf, fileUtils.getPath(fileMetaInf), Boolean.TRUE);
+        deleteAndLog(file);
+        fileMetaInfService.deleteMetaInfFile(fileId);
+        LOG.info("Meta information of file: '" + file.getAbsolutePath() + "' deleted");
+    }
 
+    private void deleteAndLog(File file) throws IOException {
         if (file.delete()) {
             LOG.info("File: '" + file.getAbsolutePath() + "' deleted");
         } else {
             throw new IOException("Error deleting file: '" + file.getAbsolutePath());
         }
-
-        fileMetaInfService.deleteMetaInfFile(fileId);
-        LOG.info("Meta information of file: '" + file.getAbsolutePath() + "' deleted");
     }
 
     private void setResponse(HttpServletResponse response, FileMetaInf fileMetaInf) {
