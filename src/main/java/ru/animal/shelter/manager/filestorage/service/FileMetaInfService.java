@@ -1,5 +1,6 @@
 package ru.animal.shelter.manager.filestorage.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
 import ru.animal.shelter.manager.filestorage.model.dto.RequestForMultipleFileDTO;
@@ -20,5 +21,5 @@ public interface FileMetaInfService {
 
     void deleteMetaInfFile(UUID fileId);
 
-    List<FileMetaInf> searchMetaInfFile(SearchRequestFiles searchRequestFiles);
+    Page<FileMetaInf> searchMetaInfFile(SearchRequestFiles searchRequestFiles);
 }

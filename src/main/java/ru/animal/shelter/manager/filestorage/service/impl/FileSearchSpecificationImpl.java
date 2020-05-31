@@ -3,9 +3,13 @@ package ru.animal.shelter.manager.filestorage.service.impl;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
+import ru.animal.shelter.manager.filestorage.model.dto.FileSortProperty;
 import ru.animal.shelter.manager.filestorage.model.dto.SearchRequestFiles;
 import ru.animal.shelter.manager.filestorage.service.FileSearchSpecification;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,6 +21,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -41,6 +46,30 @@ public class FileSearchSpecificationImpl implements FileSearchSpecification {
                         .toPredicate(root, query.distinct(true), criteriaBuilder);
     }
 
+    @Override
+    public Pageable getPage(SearchRequestFiles requestPage) {
+        var sortPropertyName = sortPropertyName(requestPage.getSortProperty());
+        var sort = Sort.by(new Sort.Order(requestPage.getSort(), sortPropertyName));
+        return PageRequest.of(requestPage.getPageNumber(), requestPage.getPageSize(), sort);
+    }
+
+    public String sortPropertyName(FileSortProperty sortProperty) {
+        switch (sortProperty) {
+            case FILE_NAME:
+                return FileMetaInf.PROPERTY_NAME_FILE_NAME;
+            case FILE_EXT:
+                return FileMetaInf.PROPERTY_NAME_FILE_EXT;
+            case DESCRIPTION:
+                return FileMetaInf.PROPERTY_NAME_DESCRIPTION;
+            case CREATE_DATE:
+                return FileMetaInf.PROPERTY_NAME_CREATE_DATE;
+            case EDIT_DATE:
+                return FileMetaInf.PROPERTY_NAME_EDIT_DATE;
+            default:
+                throw new UnsupportedOperationException("Unhandled file sort property " + sortProperty);
+        }
+    }
+
     private Specification<FileMetaInf> equalsUserId(UUID userId) {
         if (userId == null)
             return null;
@@ -48,25 +77,36 @@ public class FileSearchSpecificationImpl implements FileSearchSpecification {
     }
 
     private Specification<FileMetaInf> likeFileName(String fileName) {
-        var fileNameTrim = fileName.trim();
-        if (fileNameTrim.equals("") || fileNameTrim.isEmpty())
+        if (fileName == null || fileName.isEmpty())
             return null;
+
+        var fileNameTrim = fileName.trim();
+        if (fileNameTrim.equals(""))
+            return null;
+
         return (fileMetaInfRoot, cq, cb) ->
-                buildFinalString(fileName, fileMetaInfRoot, cb, FileMetaInf.PROPERTY_NAME_FILE_NAME);
+                buildFinalString(fileNameTrim, fileMetaInfRoot, cb, FileMetaInf.PROPERTY_NAME_FILE_NAME);
     }
 
     private Specification<FileMetaInf> likeDescription(String description) {
-        var descriptionTrim = description.trim();
-        if (descriptionTrim.equals("") || descriptionTrim.isEmpty())
+        if (description == null || description.isEmpty())
             return null;
+
+        var descriptionTrim = description.trim();
+        if (descriptionTrim.equals(""))
+            return null;
+
         return (fileMetaInfRoot, cq, cb) ->
-                buildFinalString(description, fileMetaInfRoot, cb, FileMetaInf.PROPERTY_NAME_DESCRIPTION);
+                buildFinalString(descriptionTrim, fileMetaInfRoot, cb, FileMetaInf.PROPERTY_NAME_DESCRIPTION);
     }
 
     private Specification<FileMetaInf> equalsFileExt(List<String> fileExt) {
         if (fileExt == null || fileExt.isEmpty())
             return null;
-        return (fileMetaInfRoot, cq, cb) -> fileMetaInfRoot.get(FileMetaInf.PROPERTY_NAME_FILE_EXT).in(fileExt);
+        var fileExtTrim = fileExt.stream().map(String::trim).filter(str->
+                !str.equals("")).collect(Collectors.toList());
+
+        return (fileMetaInfRoot, cq, cb) -> fileMetaInfRoot.get(FileMetaInf.PROPERTY_NAME_FILE_EXT).in(fileExtTrim);
     }
 
     private Specification<FileMetaInf> greaterThanOrEqualToCreateFile(LocalDate createDateBefore){

@@ -3,6 +3,7 @@ package ru.animal.shelter.manager.filestorage.service.impl;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
@@ -10,6 +11,7 @@ import ru.animal.shelter.manager.filestorage.model.dto.RequestForMultipleFileDTO
 import ru.animal.shelter.manager.filestorage.model.dto.SearchRequestFiles;
 import ru.animal.shelter.manager.filestorage.repository.FileRepository;
 import ru.animal.shelter.manager.filestorage.service.FileMetaInfService;
+import ru.animal.shelter.manager.filestorage.service.FileSearchSpecification;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
 import javax.validation.ValidationException;
 import java.time.Clock;
@@ -26,6 +28,7 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
     private final Clock clock;
     private final FileMapperImpl fileMapper;
     private final FileRepository fileRepository;
+    private final FileSearchSpecification fileSearchSpecification;
 
     @Override
     public FileMetaInf getMetaInfFile(UUID userId, UUID fileId) {
@@ -68,8 +71,10 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
     }
 
     @Override
-    public List<FileMetaInf> searchMetaInfFile(SearchRequestFiles searchRequestFiles) {
-        return null;
+    public Page<FileMetaInf> searchMetaInfFile(SearchRequestFiles searchRequestFiles) {
+        var page = fileSearchSpecification.getPage(searchRequestFiles);
+        var specification = fileSearchSpecification.getSpecificationForFilters(searchRequestFiles);
+        return fileRepository.findAll(specification, page);
     }
 
     private FileMetaInf buildFileMetaInf(MultipartFile multipartFile, UUID userId, String description) {
