@@ -13,7 +13,6 @@ import ru.animal.shelter.manager.filestorage.service.ArchiveService;
 import ru.animal.shelter.manager.filestorage.utils.FileUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Clock;
@@ -26,7 +25,7 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @AllArgsConstructor
-public class ArchiveServiceImpl implements ArchiveService {
+public class ArchiveServiceImpl extends BaseService implements ArchiveService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
     private static final String ZIP = "zip";
@@ -90,9 +89,8 @@ public class ArchiveServiceImpl implements ArchiveService {
     }
 
     private void setResponse(HttpServletResponse response, FileMetaInf fileMetaInf) {
-        var fileName = URLEncoder.encode(fileMetaInf.getFileName(), StandardCharsets.UTF_8);
-        response.setHeader(
-                HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +
+        var fileName = getFileName(fileMetaInf);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +
                         fileName + "." + fileMetaInf.getFileExt());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setContentLengthLong(fileMetaInf.getSize());

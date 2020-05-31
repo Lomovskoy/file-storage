@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class FileServiceImpl implements FileService {
+public class FileServiceImpl extends BaseService implements FileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
 
@@ -86,9 +86,8 @@ public class FileServiceImpl implements FileService {
     }
 
     private void setResponse(HttpServletResponse response, FileMetaInf fileMetaInf) {
-        var fileName = URLEncoder.encode(fileMetaInf.getFileName(), StandardCharsets.UTF_8);
-        response.setHeader(
-                HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +
+        var fileName = getFileName(fileMetaInf);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +
                         fileName + "." + fileMetaInf.getFileExt());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setContentLengthLong(fileMetaInf.getSize());
