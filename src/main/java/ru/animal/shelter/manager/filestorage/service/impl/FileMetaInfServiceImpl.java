@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.animal.shelter.manager.filestorage.model.FileMetaInf;
 import ru.animal.shelter.manager.filestorage.model.dto.RequestForMultipleFileDTO;
+import ru.animal.shelter.manager.filestorage.model.dto.SearchRequestFiles;
 import ru.animal.shelter.manager.filestorage.repository.FileRepository;
 import ru.animal.shelter.manager.filestorage.service.FileMetaInfService;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
@@ -62,7 +63,13 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
 
     @Override
     public void deleteMetaInfFile(UUID fileId) {
-        fileRepository.deleteById(fileId);
+        var fileMetaInf = fileRepository.findById(fileId).orElseThrow();
+        fileRepository.deleteById(fileMetaInf.getId());
+    }
+
+    @Override
+    public List<FileMetaInf> searchMetaInfFile(SearchRequestFiles searchRequestFiles) {
+        return null;
     }
 
     private FileMetaInf buildFileMetaInf(MultipartFile multipartFile, UUID userId, String description) {

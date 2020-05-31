@@ -22,6 +22,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FileMetaInf {
 
+    public static final String PROPERTY_NAME_FILE_NAME = "file_name";
+    public static final String PROPERTY_NAME_FILE_EXT = "file_ext";
+    public static final String PROPERTY_NAME_DESCRIPTION = "description";
+    public static final String PROPERTY_NAME_CREATE_DATE = "create_date";
+    public static final String PROPERTY_NAME_EDIT_DATE = "edit_date";
+    public static final String PROPERTY_NAME_USER_ID = "user_id";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;

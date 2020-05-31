@@ -4,10 +4,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,30 +17,44 @@ import java.util.UUID;
 @ApiModel("Модель для поиска по файлам")
 public class SearchRequestFiles {
 
-    @ApiParam("Имена файлов")
-    List<String> fileName;
+    @ApiParam(value = "Идентификатор пользователя")
+    @NotNull
+    UUID userId;
 
-    @ApiParam("Расширения файлов")
+    @ApiParam(value = "Имя файла", example = " ")
+    String fileName;
+
+    @ApiParam(value = "Расширения файлов", example = " ")
     List<String> fileExt;
 
-    @ApiParam("Описание файла")
+    @ApiParam(value = "Описание файла", example = " ")
     String description;
 
     @ApiParam("От какой даты создания файла искать")
-    LocalDateTime createDateFrom;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    LocalDate createDateFrom;
 
     @ApiParam("До какой даты создания файла искать")
-    LocalDateTime createDateBefore;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    LocalDate createDateBefore;
 
     @ApiParam("От какой даты изменения файла искать")
-    LocalDateTime editDateFrom;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    LocalDate editDateFrom;
 
     @ApiParam("До какой даты изменения файла искать")
-    LocalDateTime editDateBefore;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    LocalDate editDateBefore;
 
-    @ApiParam("Текущая страница")
-    Integer page;
+    @ApiParam(value = "Текущая страница", example = "0")
+    @Min(0)
+    Integer pageNumber;
 
-    @ApiParam("Количество элементов на странице")
-    Integer elements;
+    @ApiParam(value = "Количество элементов на странице", example = "1")
+    @Min(1)
+    Integer pageSize;
+
+    @ApiParam(value = "Метод сортировки", example = "ASC")
+    Sort.Direction sort;
+
 }

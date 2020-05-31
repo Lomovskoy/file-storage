@@ -12,6 +12,7 @@ import ru.animal.shelter.manager.filestorage.aop.FileNumberValidation;
 import ru.animal.shelter.manager.filestorage.aop.FileSizeValidation;
 import ru.animal.shelter.manager.filestorage.model.dto.FileMetaInfDTO;
 import ru.animal.shelter.manager.filestorage.model.dto.RequestForMultipleFileDTO;
+import ru.animal.shelter.manager.filestorage.model.dto.SearchRequestFiles;
 import ru.animal.shelter.manager.filestorage.service.FileService;
 import ru.animal.shelter.manager.filestorage.service.impl.FileMetaInfServiceImpl;
 import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl;
@@ -62,6 +63,13 @@ public class FileController {
         return fileMetaInf.stream().map(fileMapper::fileToFileDtoMapper).collect(Collectors.toList());
     }
 
+    @GetMapping("search")
+    @ApiOperation("Поиск по файлам")
+    public List<FileMetaInfDTO> searchFiles(@Validated SearchRequestFiles searchRequestFiles){
+        var fileMetaInf = fileMetaInfService.searchMetaInfFile(searchRequestFiles);
+        return fileMetaInf.stream().map(fileMapper::fileToFileDtoMapper).collect(Collectors.toList());
+    }
+
     @FileSizeValidation
     @ApiOperation("Загрузить файл")
     @PostMapping("{userId}")
@@ -89,10 +97,4 @@ public class FileController {
         fileService.deleteFile(userId, fileId);
     }
 
-    @GetMapping("search")
-    @ApiOperation("Поиск по файлам")
-    public List<FileMetaInfDTO> searchFiles(@Validated RequestForMultipleFileDTO request){
-        var fileMetaInf = fileMetaInfService.getManyMetaInfFile(request);
-        return fileMetaInf.stream().map(fileMapper::fileToFileDtoMapper).collect(Collectors.toList());
-    }
 }
