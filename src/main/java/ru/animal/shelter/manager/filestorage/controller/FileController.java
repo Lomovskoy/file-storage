@@ -19,6 +19,7 @@ import ru.animal.shelter.manager.filestorage.service.mappers.impl.FileMapperImpl
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -84,9 +85,9 @@ public class FileController {
     @ApiOperation("Изменить метаинформацию о файле")
     public FileMetaInfDTO editFile(@ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
                                    @ApiParam("Идентификатор файла") @PathVariable UUID fileId,
-                                   @ApiParam("Описании файла") @RequestParam String description,
-                                   @ApiParam("Имя файла") @RequestParam String fileName) {
-        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description, fileName);
+                                   @ApiParam(value = "Описании файла") @RequestParam Optional<String> description,
+                                   @ApiParam(value = "Имя файла") @RequestParam Optional<String> fileName) {
+        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description.orElse(""), fileName.orElse(""));
         return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 

@@ -54,13 +54,20 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
     public FileMetaInf editMetaInfFile(UUID userId, UUID fileId, String description, String fileName) {
         var fileMetaInf = getMetaInfFile(userId, fileId);
 
-        if (!description.isEmpty() || !description.equals("")){
-            edinDescription(userId, fileId, description, fileMetaInf);
+        if (description != null){
+            var descriptionTrim = description.trim();
+            if (!descriptionTrim.isEmpty()){
+                editDescription(userId, fileId, descriptionTrim, fileMetaInf);
+                LOG.info("Description about the file was successfully edit to the database");
+            }
         }
-        if (!fileName.isEmpty() || !fileName.equals("")){
-            editFileName(userId, fileId, fileName, fileMetaInf);
+        if (fileName != null){
+            var fileNameTrim = fileName.trim();
+            if (!fileNameTrim.isEmpty()){
+                editFileName(userId, fileId, fileNameTrim, fileMetaInf);
+                LOG.info("FileName about the file was successfully edit to the database");
+            }
         }
-        LOG.info("Meta-information about the file was successfully edit to the database");
         return fileMetaInf;
     }
 
@@ -98,7 +105,7 @@ public class FileMetaInfServiceImpl implements FileMetaInfService {
         log(userId, fileId);
     }
 
-    private void edinDescription(UUID userId, UUID fileId, String description, FileMetaInf fileMetaInf) {
+    private void editDescription(UUID userId, UUID fileId, String description, FileMetaInf fileMetaInf) {
         fileMetaInf.setDescription(description);
         fileMetaInf.setEditDate(LocalDateTime.now(clock.getZone()));
         fileRepository.save(fileMetaInf);
