@@ -15,7 +15,7 @@ public interface FileMetaInfService {
 
     FileMetaInf saveMetaInfFile(MultipartFile multipartFile, UUID userId, String description);
 
-    FileMetaInf editMetaInfFile(UUID userId, UUID fileId, String description);
+    FileMetaInf editMetaInfFile(UUID userId, UUID fileId, String description, String fileName);
 
     void deleteMetaInfFile(UUID fileId);
 }

@@ -32,7 +32,7 @@ public class FileController {
     private final FileMetaInfServiceImpl fileMetaInfService;
 
     @GetMapping("/{userId}/{fileId}")
-    @ApiOperation("Полйчить файл")
+    @ApiOperation("Получить файл")
     public void getFile(@ApiParam("Идентификатор файла") @PathVariable UUID fileId,
                         @ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
                         HttpServletResponse response) throws IOException {
@@ -41,8 +41,9 @@ public class FileController {
 
     @FileNumberValidation
     @GetMapping("many")
-    @ApiOperation("Полйчить файлы")
-    public void getManyFile(@Validated RequestForMultipleFileDTO requestForMultipleFile, HttpServletResponse response) throws IOException {
+    @ApiOperation("Получить файлы")
+    public void getManyFile(@Validated RequestForMultipleFileDTO requestForMultipleFile,
+                            HttpServletResponse response) throws IOException {
         fileService.getManyFile(requestForMultipleFile, response);
     }
 
@@ -66,7 +67,7 @@ public class FileController {
     @PostMapping("{userId}")
     public FileMetaInfDTO saveFile(@ApiParam("Файл") @RequestBody MultipartFile multipartFile,
                                    @ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
-                                   @ApiParam("Описани файла") @RequestParam(defaultValue = "") String description) throws IOException {
+                                   @ApiParam("Описании файла") @RequestParam(defaultValue = "") String description) throws IOException {
         var fileMetaInf = fileService.saveFile(multipartFile, userId, description);
         return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
@@ -75,8 +76,9 @@ public class FileController {
     @ApiOperation("Изменить метаинформацию о файле")
     public FileMetaInfDTO editFile(@ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
                                    @ApiParam("Идентификатор файла") @PathVariable UUID fileId,
-                                   @ApiParam("Описани файла") @RequestParam(defaultValue = "") String description) {
-        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description);
+                                   @ApiParam("Описании файла") @RequestParam String description,
+                                   @ApiParam("Имя файла") @RequestParam String fileName) {
+        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description, fileName);
         return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 
@@ -85,5 +87,12 @@ public class FileController {
     public void deleteFile(@ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
                            @ApiParam("Идентификатор файла") @PathVariable UUID fileId) throws IOException {
         fileService.deleteFile(userId, fileId);
+    }
+
+    @GetMapping("search")
+    @ApiOperation("Поиск по файлам")
+    public List<FileMetaInfDTO> searchFiles(@Validated RequestForMultipleFileDTO request){
+        var fileMetaInf = fileMetaInfService.getManyMetaInfFile(request);
+        return fileMetaInf.stream().map(fileMapper::fileToFileDtoMapper).collect(Collectors.toList());
     }
 }
