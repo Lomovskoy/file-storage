@@ -85,9 +85,9 @@ public class FileController {
     @ApiOperation("Изменить метаинформацию о файле")
     public FileMetaInfDTO editFile(@ApiParam("Идентификатор пользователя") @PathVariable UUID userId,
                                    @ApiParam("Идентификатор файла") @PathVariable UUID fileId,
-                                   @ApiParam(value = "Описании файла") @RequestParam Optional<String> description,
-                                   @ApiParam(value = "Имя файла") @RequestParam Optional<String> fileName) {
-        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description.orElse(""), fileName.orElse(""));
+                                   @ApiParam(value = "Описании файла") @RequestParam(required = false) String description,
+                                   @ApiParam(value = "Имя файла") @RequestParam(required = false) String fileName) {
+        var fileMetaInf = fileMetaInfService.editMetaInfFile(userId, fileId, description, fileName);
         return fileMapper.fileToFileDtoMapper(fileMetaInf);
     }
 
